@@ -1,0 +1,48 @@
+There are 11 instructions we are currently implimenting
+So we will need at least 4 control bits to determine their difference
+Their 6 bit mips funct codes are
+sll  00 00 00
+srl  00 00 10
+sra  00 00 11
+add  10 00 00
+sub  10 00 10
+and  10 01 00
+or   10 01 01
+xor  10 01 10
+nor  10 01 11
+slt  10 10 10
+sltu 10 10 11
+
+Out internal 3 bit funct code were as follow these will need to be derived and passed in because changing them would be annoying
+000/010 add/sub
+100 and
+101 or
+110 xor
+111 nor
+
+What are the patterns here for setting out control signals in to the alu
+Bit 0 is a general switch
+Bit 1 toggles between and/sub Lshift/Rshift
+Bit 2 is for all the logic functions
+Bit 3 is for slt/sltu
+Bit 4 is unused (used for things like mult/div)
+Bit 5 is for shift/non-shift
+
+Note we have a problem. Bit 2 should toggle InvertB and Cin for subtraction, but tht would impact xor and nor since we hijacked our full adder to reduce gate count. So if bit 3 is set bit 2 should not toggle InvertB and Cin.
+
+So setting our control signals
+Where the number listed is the bit from the funct code
+internal funct 3bits 	-> 210
+logic 			-> 2
+InvertB			-> 1 if not 2
+Cin			-> 1 if not 2
+If the listed bit is off we choose the first option if on we chose the second E.G if bit 1 is off its sll if its on its srl/sra
+O is the output labeled O on the alu
+Output Control MUXs
+sll or srl/sra		-> 1
+srl or sra		-> 0
+O or slt/u		-> 3
+slt or sltu		-> 0
+shift or O		-> 5
+
+
